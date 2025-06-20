@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>College Portal Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo">PSG COLLEGE OF TECHNOLOGY</div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1>Welcome to the BAJA BHAIS</h1>
+      <button onclick="checkAdminAccess()">Admin Portal</button>
+      <button onclick="goToMember()">Member Portal</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 PSGCT. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function checkAdminAccess() {
+      try {
+        const response = await fetch('/api/check-role', {
+          method: 'GET',
+          credentials: 'include' // include session cookies
+        });
+
+        if (!response.ok) {
+          alert('Session expired or not logged in.');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const data = await response.json();
+        console.log("Fetched role from server:", data.role); // 🔍 debug line
+
+        // Normalize role string just in case
+        const role = data.role?.toLowerCase();
+
+        if (role === 'captain' || role === 'vice captain' || role === 'team captain') {
+          window.location.href = '/admin.html';
+        } else {
+          alert('Access denied: You are not authorized to view the Admin Portal.');
+        }
+      } catch (error) {
+        console.error('Error checking role:', error);
+        alert('Something went wrong. Please try again later.');
+      }
+    }
+
+    function goToMember() {
+      window.location.href = '/member.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .checkbox-group label {
+      font-weight: normal;
+      display: inline-block;
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form action="/api/details" method="POST" enctype="multipart/form-data">
+    <h2>Enter Your Details</h2>
+
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" required placeholder="Name" />
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required placeholder="Email" />
+
+    <label for="rollNumber">Roll Number</label>
+    <input type="text" name="rollNumber" id="rollNumber" required placeholder="Roll Number" />
+
+    <label for="officialEmail">Official Mail</label>
+    <input type="email" name="officialEmail" id="officialEmail" required placeholder="Official Mail" />
+
+    <label for="department">Department</label>
+    <input type="text" name="department" id="department" required placeholder="Department" />
+
+    <label for="parentsName">Parent's Name</label>
+    <input type="text" name="parentsName" id="parentsName" required placeholder="Parent's Name" />
+
+    <label for="bloodGroup">Blood Group</label>
+    <input type="text" name="bloodGroup" id="bloodGroup" required placeholder="Blood Group" />
+
+    <label for="studentMobile">Student Mobile Number</label>
+    <input type="tel" name="studentMobile" id="studentMobile" required placeholder="Student Mobile Number" />
+
+    <label for="parentMobile">Parent Mobile Number</label>
+    <input type="tel" name="parentMobile" id="parentMobile" required placeholder="Parent Mobile Number" />
+
+    <label for="address">Address</label>
+    <textarea name="address" id="address" rows="3" required placeholder="Address"></textarea>
+
+    <label>Subsystems</label>
+    <fieldset class="checkbox-group">
+      <label><input type="checkbox" id="subsystem1" name="subsystems" value="Powertrain" /> Powertrain</label>
+      <label><input type="checkbox" id="subsystem2" name="subsystems" value="Roll Cage" /> Roll Cage</label>
+      <label><input type="checkbox" id="subsystem3" name="subsystems" value="Brakes" /> Brakes</label>
+      <label><input type="checkbox" id="subsystem4" name="subsystems" value="Management" /> Management</label>
+      <label><input type="checkbox" id="subsystem5" name="subsystems" value="Vehicle Dynamics" /> Vehicle Dynamics</label>
+    </fieldset>
+
+    <label for="role">Role</label>
+    <select name="role" id="role" required>
+      <option value="" disabled selected>Select your role</option>
+      <option value="captain">Captain</option>
+      <option value="vice captain">Vice Captain</option>
+      <option value="Subsystem Lead">Subsystem Lead</option>
+      <option value="member">Members</option>
+    </select>
+
+    <label for="photo">Upload Photo</label>
+    <input type="file" name="photo" id="photo" accept="image/*" required />
+
+    <label for="idCardPhoto">Upload ID Card Photo</label>
+    <input type="file" name="idCardPhoto" id="idCardPhoto" accept="image/*" required />
+
+    <button type="submit">Submit</button>
+  </form>
+
+</body>
+</html>

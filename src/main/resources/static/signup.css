@@ -1,0 +1,115 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #ffffff, #fefbfb); /* soft red gradient */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Container for form and heading */
+.signup-container {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Heading style */
+.signup-container h2 {
+  font-size: 28px;
+  color: #040202;
+  margin-bottom: 24px;
+}
+
+/* Label styling */
+form label {
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color:#040202;
+}
+
+/* Input field styling */
+form input[type="email"],
+form input[type="password"],
+form input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  border: 1px solid #411717;
+  border-radius: 8px;
+  background-color: #fff0f0;
+  font-family: inherit;
+  font-size: 16px; /* Explicitly set font size */
+  line-height: 1.5; /* Helps maintain input height consistency */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+  border-color: #b71c1c;
+  box-shadow: 0 0 6px rgba(5, 5, 5, 0.4);
+  outline: none;
+}
+
+/* Red primary button style */
+form button[type="submit"],
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #d32f2f;
+  color: #fff;
+  border: 2px solid #d32f2f;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4);
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+form button[type="submit"]:hover,
+.primary-btn:hover {
+  background-color: #b71c1c;
+  transform: translateY(-2px);
+}
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  background-color: #ffffff;
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.google-btn:hover {
+  box-shadow: 0 0 8px rgba(66, 133, 244, 0.4);
+}

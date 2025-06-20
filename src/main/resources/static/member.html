@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member - College Name</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<style>
+       /* Add some basic styling for the new button if not already in dashboard.css */
+       .back-to-main-admin-btn {
+           background-color: #6c757d; /* Gray color */
+           color: white;
+           padding: 10px 15px;
+           text-decoration: none;
+           border-radius: 5px;
+           margin-top: 20px; /* Space from other elements */
+           display: inline-block; /* Allows padding and margin */
+           transition: background-color 0.2s ease;
+           cursor: pointer;
+           border: none;
+       }
+
+       .back-to-main-admin-btn:hover {
+           background-color: #5a6268;
+       }
+   </style>
+<body>
+    <header>
+        <div class="logo">PSG COLLEGE OF TECHNOLOGY</div>
+        </header>
+
+    <main>
+        <div class="container">
+            <h1>Member Dashboard</h1>
+            <p>Welcome! Please select an action:</p>
+
+            <div class="member-buttons">
+                <button onclick="location.href='view_attendance.html'">View Attendance</button>
+                <button onclick="location.href='see_work.html'">See Work</button>
+                <button onclick="location.href='joinclass.html'">Join Class</button>
+                <button onclick="location.href='feedback.html'">Feedback</button>
+            </div>
+			<div style="text-align: center; margin-top: 30px;">
+			               <button onclick="location.href='dashboard.html'" class="back-to-main-admin-btn">Back to Dashboard</button>
+			           </div>
+            </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 PSGCT. All rights reserved.</p>
+    </footer>
+</body>
+</html>

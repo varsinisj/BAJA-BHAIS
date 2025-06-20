@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="signup.css" />
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Sign Up</h2>
+
+    <div id="message" style="color: red; margin-bottom: 1em;"></div>
+
+    <form id="signupForm">
+      <label for="email">Email:</label>
+      <input id="email" type="email" name="email" required />
+
+      <label for="password">Password:</label>
+      <input id="password" type="password" name="password" required />
+
+      <label class="checkbox-label" for="showPassword">
+        <input type="checkbox" id="showPassword" />
+        Show Password
+      </label>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('showPassword').addEventListener('change', function () {
+      const passwordField = document.getElementById('password');
+      passwordField.type = this.checked ? 'text' : 'password';
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = '';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        messageDiv.textContent = 'Please fill out all fields.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          window.location.href = '/details.html';
+        } else {
+          messageDiv.textContent = data.message || 'Registration failed';
+        }
+      } catch (error) {
+        messageDiv.textContent = 'An error occurred. Please try again.';
+        console.error('Signup error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

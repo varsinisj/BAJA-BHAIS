@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Work</title>
+    <link rel="stylesheet" href="style.css" /> <style>
+        /* Basic styles for displaying work - integrate into your main CSS */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .work-container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; margin-bottom: 20px; }
+        .work-section { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background-color: #f9f9f9; }
+        .work-item { background-color: #ffffff; border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .work-item h3 { margin-top: 0; margin-bottom: 10px; color: #0056b3; }
+        .work-item p { margin-bottom: 5px; color: #666; }
+        .message { margin-top: 15px; padding: 10px; border-radius: 5px; font-weight: bold; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .info { background-color: #e0f7fa; color: #007bb6; border-color: #b2ebf2; }
+		.back-button {
+		           background-color: #6c757d; /* Grey button */
+		           color: white;
+		           padding: 10px 20px;
+		           border: none;
+		           border-radius: 5px;
+		           font-size: 1em;
+		           cursor: pointer;
+		           margin-top: 20px;
+		           transition: background-color 0.3s ease;
+		       }
+		       .back-button:hover {
+		           background-color: #5a6268;
+		       }
+    </style>
+</head>
+<body>
+    <div class="work-container">
+        <h1>My Work Details</h1>
+
+        <div class="work-section">
+            <h2>User Specific Works</h2>
+            <div id="userSpecificWorkList">
+                <div id="userSpecificWorkMessage" class="message info" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div class="work-section">
+            <h2>Common Works</h2>
+            <div id="commonWorkList">
+                <div id="commonWorkMessage" class="message info" style="display: none;"></div>
+            </div>
+        </div>
+		<div class="button-container">
+				       <button class="back-button" onclick="window.history.back()">Back to Member Dashboard</button>
+				        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userSpecificWorkListDiv = document.getElementById('userSpecificWorkList');
+            const commonWorkListDiv = document.getElementById('commonWorkList');
+            const userSpecificWorkMessageDiv = document.getElementById('userSpecificWorkMessage');
+            const commonWorkMessageDiv = document.getElementById('commonWorkMessage');
+
+            // Helper function to display messages to the user
+            function showMessage(element, text, type) {
+                element.textContent = text;
+                element.classList.remove('success', 'error', 'info'); // Clear previous types
+                element.classList.add(type); // Add new type
+                element.style.display = 'block'; // Make the message visible
+            }
+
+            // Function to fetch and display work details
+            async function fetchAndDisplayWork() {
+                try {
+                    // Make a GET request to your backend API endpoint
+                    // The backend /api/member/my-work will retrieve the userId from the session
+                    const response = await fetch('/api/member/my-work');
+                    const data = await response.json(); // Parse the JSON response body
+
+                    // Clear any previous content and hide messages before rendering new data
+                    userSpecificWorkListDiv.innerHTML = '';
+                    commonWorkListDiv.innerHTML = '';
+                    userSpecificWorkMessageDiv.style.display = 'none';
+                    commonWorkMessageDiv.style.display = 'none';
+
+                    // Check if the HTTP request was successful (status code 2xx)
+                    if (response.ok) {
+                        const userWorks = data.userWorks || []; // Get user-specific works, default to empty array
+                        const commonWorks = data.commonWorks || []; // Get common works, default to empty array
+
+                        // Render User Specific Works
+                        if (userWorks.length > 0) {
+                            userWorks.forEach(work => {
+                                const workItemDiv = document.createElement('div');
+                                workItemDiv.classList.add('work-item'); // Apply basic styling
+                                workItemDiv.innerHTML = `
+                                    <h3>${work.title}</h3>
+                                    <p>Description: ${work.description}</p>
+                                    <p>Deadline: ${work.dueDate || 'N/A'}</p> `;
+                                userSpecificWorkListDiv.appendChild(workItemDiv);
+                            });
+                        } else {
+                            showMessage(userSpecificWorkMessageDiv, 'No user-specific work assigned to you.', 'info');
+                        }
+
+                        // Render Common Works
+                        if (commonWorks.length > 0) {
+                            commonWorks.forEach(work => {
+                                const workItemDiv = document.createElement('div');
+                                workItemDiv.classList.add('work-item'); // Apply basic styling
+                                workItemDiv.innerHTML = `
+                                    <h3>${work.title}</h3>
+                                    <p>Description: ${work.description}</p>
+                                    <p>Deadline: ${work.dueDate || 'N/A'}</p>
+                                `;
+                                commonWorkListDiv.appendChild(workItemDiv);
+                            });
+                        } else {
+                            showMessage(commonWorkMessageDiv, 'No common work items available.', 'info');
+                        }
+
+                    } else {
+                        // If the backend returned an error (e.g., 401, 500)
+                        showMessage(userSpecificWorkMessageDiv, data.message || 'Failed to load work items.', 'error');
+                        showMessage(commonWorkMessageDiv, data.message || 'Failed to load work items.', 'error');
+                        console.error('API Error:', data.message);
+
+                        // If it's an unauthorized error, redirect to login
+                        if (response.status === 401) {
+                            setTimeout(() => {
+                                window.location.href = '/login.html'; // Redirect to your login page
+                            }, 2000); // Redirect after 2 seconds
+                        }
+                    }
+                } catch (error) {
+                    // Catch network errors (e.g., server down, no internet) or JSON parsing errors
+                    showMessage(userSpecificWorkMessageDiv, 'An error occurred while fetching work details.', 'error');
+                    showMessage(commonWorkListDiv, 'An error occurred while fetching work details.', 'error');
+                    console.error('Fetch Error:', error);
+                }
+            }
+
+            // Call the function to fetch and display work when the page finishes loading
+            fetchAndDisplayWork();
+        });
+    </script>
+</body>
+</html>

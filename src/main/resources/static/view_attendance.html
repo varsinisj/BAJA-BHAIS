@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Attendance</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic styling for the tables - you can enhance this with your style.css */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff; /* Primary blue for headers */
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+		.back-button {
+		      background-color: #6c757d; /* Grey button */
+		      color: white;
+		      padding: 10px 20px;
+		      border: none;
+		      border-radius: 5px;
+		      font-size: 1em;
+		      cursor: pointer;
+		      margin-top: 20px;
+		      transition: background-color 0.3s ease;
+		  }
+		  .back-button:hover {
+		      background-color: #5a6268;
+		  }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>My Attendance Details</h2>
+
+        <div id="attendanceTableContainer">
+            <p id="loadingMessage">Loading attendance data...</p>
+        </div>
+		<button class="back-button" onclick="window.history.back()">Back to Member Dashboard</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/member/my-attendance')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Failed to fetch attendance data.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableContainer = document.getElementById('attendanceTableContainer');
+                    const loadingMessage = document.getElementById('loadingMessage');
+
+                    if (data && data.length > 0) {
+                        loadingMessage.style.display = 'none';
+
+                        const table = document.createElement('table');
+                        table.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        `;
+                        const tbody = table.querySelector('tbody');
+
+                        data.forEach(record => {
+                            const row = tbody.insertRow();
+                            // 'attendanceDate' matches the field name from AttendanceEntity
+                            row.insertCell().textContent = record.attendanceDate ? record.attendanceDate : 'N/A';
+
+                            // --- CRITICAL FIX FOR 'STATUS' COLUMN ---
+                            let statusText = 'N/A';
+                            // Check if 'record.present' is explicitly true or false
+                            if (record.present === true) {
+                                statusText = 'Present';
+                            } else if (record.present === false) {
+                                statusText = 'Absent';
+                            }
+                            row.insertCell().textContent = statusText;
+                        });
+                        tableContainer.appendChild(table);
+                    } else {
+                        loadingMessage.textContent = 'No attendance records found for this user.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance:', error);
+                    const tableContainer = document.getElementById('attendanceTableContainer');
+                    const loadingMessage = document.getElementById('loadingMessage');
+                    loadingMessage.style.display = 'none';
+                    const errorMessageDiv = document.createElement('div');
+                    errorMessageDiv.className = 'message error';
+                    errorMessageDiv.textContent = 'Failed to load attendance: ' + error.message;
+                    tableContainer.appendChild(errorMessageDiv);
+                });
+        });
+    </script>
+</body>
+</html>

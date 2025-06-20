@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Online Class</title>
+    <link rel="stylesheet" href="dashboard.css"> <style>
+        /* Basic styling, you can integrate with your dashboard.css or refine */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .class-link-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            color: #d8000c;
+            background-color: #ffbaba;
+            border: 1px solid #d8000c;
+        }
+        #classLinkDisplay {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #0056b3; /* Blue for links */
+            word-wrap: break-word; /* Ensures long links break */
+        }
+        #joinButton {
+            background-color: #28a745; /* Green button */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+        #joinButton:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+        .back-button {
+            background-color: #6c757d; /* Grey button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="class-link-container">
+        <h2>Online Class</h2>
+        <p id="loadingMessage">Loading class link...</p>
+        <p id="errorMessage" class="message" style="display: none;"></p>
+
+        <div id="linkContent" style="display: none;">
+            <p>Click the button below to join the online class:</p>
+            <a id="classLinkDisplay" href="#" target="_blank" rel="noopener noreferrer"></a>
+            <button id="joinButton">Join Class Now</button>
+        </div>
+        <button class="back-button" onclick="window.history.back()">Back to Member Dashboard</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const linkContent = document.getElementById('linkContent');
+            const classLinkDisplay = document.getElementById('classLinkDisplay');
+            const joinButton = document.getElementById('joinButton');
+
+            fetch('/api/member/online-class-link')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Failed to fetch class link.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingMessage.style.display = 'none'; // Hide loading message
+                    if (data.meetLink) {
+                        classLinkDisplay.textContent = data.meetLink; // Display the actual link text
+                        classLinkDisplay.href = data.meetLink; // Set the href for the anchor tag
+                        joinButton.onclick = function() { // Set click handler for the button
+                            window.open(data.meetLink, '_blank');
+                        };
+                        linkContent.style.display = 'block'; // Show the link content
+                    } else {
+                        errorMessage.textContent = 'No online class link found.';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = 'Error: ' + error.message;
+                    errorMessage.style.display = 'block';
+                    console.error('Error fetching class link:', error);
+                });
+        });
+    </script>
+</body>
+</html>

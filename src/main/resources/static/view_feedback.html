@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Feedback</title>
+    <link rel="stylesheet" href="dashboard.css"> <style>
+        /* Basic styling for feedback table */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 900px;
+            flex-grow: 1; /* Allows container to expand */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+		.back-button {
+				            display: inline-block;
+				            margin-top: 20px;
+				            padding: 10px 15px;
+				            background-color: #6c757d; /* Gray color */
+				            color: white;
+				            text-decoration: none;
+				            border-radius: 5px;
+				            transition: background-color 0.2s ease;
+				            text-align: center; /* Center the button if it's the only element in its line */
+				            width: fit-content; /* Adjust width to content */
+				            margin-left: auto; /* Push to right */
+				            margin-right: auto; /* Push to left */
+				        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #333; color: white; padding: 10px; text-align: center;">
+        <h2>PSG COLLEGE OF TECHNOLOGY</h2>
+    </header>
+
+    <div class="container">
+        <h1>All Feedback</h1>
+        <div id="feedbackContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Email</th> <th>Feedback Content</th>
+                        <th>Submission Date</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTableBody">
+                    <tr>
+                        <td colspan="4">Loading feedback...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="noFeedbackMessage" style="display:none; text-align: center; color: #555;">No feedback available.</p>
+        </div>
+      <a href="/admin.html" class="back-button">Back to Admin Dashboard</a>
+    </div>
+
+    <footer style="background-color: #333; color: white; text-align: center; padding: 10px; margin-top: auto;">
+        <p>&copy; 2025 PSGCT All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackTableBody = document.getElementById('feedbackTableBody');
+            const noFeedbackMessage = document.getElementById('noFeedbackMessage');
+
+            async function fetchFeedback() {
+                try {
+                    const response = await fetch('/api/feedback/all');
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        const feedbackList = data.data; // This will now be a list of FeedbackResponseDTO
+                        if (feedbackList.length === 0) {
+                            feedbackTableBody.innerHTML = ''; // Clear loading message
+                            noFeedbackMessage.style.display = 'block';
+                        } else {
+                            feedbackTableBody.innerHTML = ''; // Clear loading message
+                            feedbackList.forEach(feedback => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${feedback.id}</td>
+                                    <td>${feedback.userEmail}</td> <td>${feedback.feedbackText}</td>
+                                    <td>${new Date(feedback.submissionDate).toLocaleString()}</td>
+                                `;
+                                feedbackTableBody.appendChild(row);
+                            });
+                        }
+                    } else {
+                        feedbackTableBody.innerHTML = `<tr><td colspan="4" style="color:red;">Error: ${data.message}</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching feedback:', error);
+                    feedbackTableBody.innerHTML = `<tr><td colspan="4" style="color:red;">Failed to load feedback. Please try again.</td></tr>`;
+                }
+            }
+
+            fetchFeedback(); // Call the function to fetch feedback when the page loads
+        });
+    </script>
+</body>
+</html>

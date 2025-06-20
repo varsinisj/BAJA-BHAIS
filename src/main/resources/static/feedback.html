@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback</title>
+    <link rel="stylesheet" href="dashboard.css"> <style>
+        /* Basic styling for the form */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .feedback-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box; /* Include padding in width */
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 150px;
+        }
+        button {
+            background-color: #007bff; /* Blue for submit */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            display: none; /* Hidden by default */
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+		.back-button {
+		           background-color: #6c757d; /* Grey button */
+		           color: white;
+		           padding: 10px 20px;
+		           border: none;
+		           border-radius: 5px;
+		           font-size: 1em;
+		           cursor: pointer;
+		           margin-top: 20px;
+		           transition: background-color 0.3s ease;
+		       }
+		       .back-button:hover {
+		           background-color: #5a6268;
+		       }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <h2>Submit Your Feedback</h2>
+        <form id="feedbackForm">
+            <textarea id="feedbackText" placeholder="Enter your feedback here..." required></textarea>
+            <button type="submit">Submit Feedback</button>
+        </form>
+        <div id="responseMessage" class="message"></div>
+        <button class="back-button" onclick="window.history.back()">Back to Member Dashboard</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackForm = document.getElementById('feedbackForm');
+            const feedbackText = document.getElementById('feedbackText');
+            const responseMessage = document.getElementById('responseMessage');
+
+            feedbackForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const feedbackContent = feedbackText.value.trim();
+
+                if (feedbackContent === "") {
+                    displayMessage("Feedback cannot be empty.", "error");
+                    return;
+                }
+
+                fetch('/api/feedback/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ feedbackText: feedbackContent }),
+                })
+                .then(response => {
+                    // Check for unauthorized status first (e.g., if session expired)
+                    if (response.status === 401) {
+                        displayMessage("You are not authorized. Please log in again.", "error");
+                        // Optionally redirect to login page
+                        // setTimeout(() => window.location.href = '/login.html', 2000);
+                        return Promise.reject(new Error("Unauthorized")); // Stop processing
+                    }
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Failed to submit feedback.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayMessage(data.message, "success");
+                    feedbackForm.reset(); // Clear the form
+                })
+                .catch(error => {
+                    console.error('Error submitting feedback:', error);
+                    displayMessage('Error: ' + error.message, "error");
+                });
+            });
+
+            function displayMessage(message, type) {
+                responseMessage.textContent = message;
+                responseMessage.className = 'message ' + type; // Set class for styling (success/error)
+                responseMessage.style.display = 'block'; // Show the message
+            }
+        });
+    </script>
+</body>
+</html>

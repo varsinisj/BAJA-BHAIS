@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Members - Admin Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Specific styles for the manage members page */
+        .members-table-container {
+            overflow-x: auto; /* Adds horizontal scroll for small screens */
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.95em;
+            white-space: nowrap; /* Prevent text from wrapping in table cells */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Styling for action buttons within the table */
+        .action-buttons button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            margin: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .remove-btn {
+            background-color: #dc3545; /* Red for remove */
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        .add-work-btn {
+            background-color: #007bff; /* Blue for add work */
+        }
+
+        .add-work-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%; /* Could be responsive */
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            text-align: left;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #212121;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .modal-content button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right; /* Align submit button to the right */
+        }
+        .modal-content button:hover {
+            background-color: #004085;
+        }
+
+        /* New style for the Download CSV button */
+        .download-csv-btn {
+            background-color: #28a745; /* Green color for download */
+            margin-left: 10px; /* Space it out from table */
+        }
+
+        .download-csv-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Button container for download button */
+        .controls-container {
+            text-align: right; /* Align button to the right */
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">PSG COLLEGE OF TECHNOLOGY</div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Manage Members</h1>
+            <div class="controls-container">
+                <button id="downloadCsvBtn" class="download-csv-btn">Download CSV</button>
+            </div>
+            <div class="members-table-container">
+                <table id="membersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Roll No.</th>
+                            <th>Department</th>
+                            <th>Student Mobile</th>
+                            <th>Official Email</th>
+                            <th>Parent Mobile</th>
+                            <th>Parents Name</th>
+                            <th>Address</th>
+                            <th>Blood Group</th>
+                            <th>Subsystems</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="14">Loading members...</td> </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 PSGCT. All rights reserved.</p>
+    </footer>
+
+    <div id="addWorkModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Assign Work to <span id="memberName"></span></h2>
+            <form id="addWorkForm">
+                <input type="hidden" id="memberId" name="memberId">
+                <label for="workTitle">Work Title:</label>
+                <input type="text" id="workTitle" name="workTitle" required>
+
+                <label for="workDescription">Description:</label>
+                <textarea id="workDescription" name="workDescription" rows="4"></textarea>
+
+                <label for="dueDate">Due Date:</label>
+                <input type="date" id="dueDate" name="dueDate">
+
+                <button type="submit">Assign Work</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const membersTableBody = document.querySelector('#membersTable tbody');
+            const addWorkModal = document.getElementById('addWorkModal');
+            const closeButton = document.querySelector('.close-button');
+            const addWorkForm = document.getElementById('addWorkForm');
+            const memberIdInput = document.getElementById('memberId');
+            const memberNameSpan = document.getElementById('memberName');
+            const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+
+            const API_BASE_URL = 'http://localhost:8080/api';
+
+            let allMembersData = []; // To store fetched data for CSV export
+
+            // Function to fetch and display members
+            async function fetchMembers() {
+                try {
+                    membersTableBody.innerHTML = '<tr><td colspan="14">Loading members...</td></tr>'; // Updated colspan
+                    const response = await fetch(`${API_BASE_URL}/users`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const users = await response.json();
+                    allMembersData = users; // Store the fetched data
+
+                    membersTableBody.innerHTML = ''; // Clear loading
+                    if (users.length === 0) {
+                        membersTableBody.innerHTML = '<tr><td colspan="14">No members found.</td></tr>'; // Updated colspan
+                        return;
+                    }
+
+                    users.forEach(user => {
+                        const row = membersTableBody.insertRow();
+                        row.dataset.userId = user.id;
+
+                        // Add cells for all relevant properties, using 'N/A' for null/undefined
+                        row.insertCell().textContent = user.id || 'N/A';
+                        row.insertCell().textContent = user.name || 'N/A';
+                        row.insertCell().textContent = user.email || 'N/A';
+                        row.insertCell().textContent = user.role || 'N/A';
+                        row.insertCell().textContent = user.rollNumber || 'N/A';
+                        row.insertCell().textContent = user.department || 'N/A';
+                        row.insertCell().textContent = user.studentMobile || 'N/A';
+                        row.insertCell().textContent = user.officialEmail || 'N/A';
+                        row.insertCell().textContent = user.parentMobile || 'N/A';
+                        row.insertCell().textContent = user.parentsName || 'N/A';
+                        row.insertCell().textContent = user.address || 'N/A';
+                        row.insertCell().textContent = user.bloodGroup || 'N/A';
+                        row.insertCell().textContent = user.subsystems || 'N/A';
+
+                        // Actions column
+                        const actionsCell = row.insertCell();
+                        actionsCell.classList.add('action-buttons');
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.textContent = 'Remove';
+                        removeBtn.classList.add('remove-btn');
+                        removeBtn.onclick = () => confirmRemove(user.id, user.name);
+                        actionsCell.appendChild(removeBtn);
+
+                        const addWorkBtn = document.createElement('button');
+                        addWorkBtn.textContent = 'Add Work';
+                        addWorkBtn.classList.add('add-work-btn');
+                        addWorkBtn.onclick = () => openAddWorkModal(user.id, user.name);
+                        actionsCell.appendChild(addWorkBtn);
+                    });
+                } catch (error) {
+                    console.error('Error fetching members:', error);
+                    membersTableBody.innerHTML = `<tr><td colspan="14" style="color: red;">Failed to load members: ${error.message}</td></tr>`; // Updated colspan
+                }
+            }
+
+            // Function to confirm and remove a member
+            async function confirmRemove(userId, userName) {
+                if (confirm(`Are you sure you want to remove ${userName} (ID: ${userId})? This action cannot be undone.`)) {
+                    await removeMember(userId);
+                }
+            }
+
+            // Function to remove a member from DB and frontend
+            async function removeMember(userId) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Add Authorization header if your backend requires it
+                            // 'Authorization': 'Bearer YOUR_ADMIN_TOKEN'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Failed to remove member: ${response.status} - ${errorText}`);
+                    }
+
+                    alert('Member removed successfully!');
+                    fetchMembers(); // Re-fetch to update table and allMembersData
+                } catch (error) {
+                    console.error('Error removing member:', error);
+                    alert(`Error removing member: ${error.message}`);
+                }
+            }
+
+            // Function to open the Add Work modal
+            function openAddWorkModal(userId, userName) {
+                memberIdInput.value = userId;
+                memberNameSpan.textContent = userName;
+                addWorkModal.style.display = 'flex';
+            }
+
+            // Function to close the Add Work modal
+            function closeAddWorkModal() {
+                addWorkModal.style.display = 'none';
+                addWorkForm.reset();
+            }
+
+            // Close modal when close button is clicked
+            closeButton.addEventListener('click', closeAddWorkModal);
+
+            // Close modal when clicking outside of the modal content
+            window.addEventListener('click', (event) => {
+                if (event.target == addWorkModal) {
+                    closeAddWorkModal();
+                }
+            });
+
+            // Handle Add Work form submission
+            addWorkForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const userId = memberIdInput.value;
+                const workTitle = document.getElementById('workTitle').value;
+                const workDescription = document.getElementById('workDescription').value;
+                const dueDate = document.getElementById('dueDate').value;
+
+                if (!workTitle || !userId) {
+                    alert('Work title and Member ID are required.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/users/${userId}/work`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: workTitle,
+                            description: workDescription,
+                            dueDate: dueDate
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Failed to assign work: ${response.status} - ${errorText}`);
+                    }
+
+                    alert('Work assigned successfully!');
+                    closeAddWorkModal();
+                } catch (error) {
+                    console.error('Error assigning work:', error);
+                    alert(`Error assigning work: ${error.message}`);
+                }
+            });
+
+            // Function to convert JSON data to CSV string
+            function convertToCsv(data) {
+                if (!data || data.length === 0) {
+                    return '';
+                }
+
+                // Define headers exactly as they appear in the table or as desired for CSV
+                const headers = [
+                    'ID', 'Name', 'Email', 'Role', 'Roll_Number', 'Department',
+                    'Student_Mobile', 'Official_Email', 'Parent_Mobile', 'Parents_Name',
+                    'Address', 'Blood_Group', 'Subsystems'
+                ];
+                const csvRows = [];
+
+                // Add header row, escaped
+                csvRows.push(headers.map(header => `"${header}"`).join(','));
+
+                // Add data rows
+                data.forEach(user => {
+                    const values = [
+                        user.id,
+                        user.name,
+                        user.email,
+                        user.role,
+                        user.rollNumber,
+                        user.department,
+                        user.studentMobile,
+                        user.officialEmail,
+                        user.parentMobile,
+                        user.parentsName,
+                        user.address,
+                        user.bloodGroup,
+                        user.subsystems
+                        // Do NOT include idCardPhoto here as it's binary data
+                        // Do NOT include 'photo' unless it's a URL/path and you want it in CSV
+                    ];
+                    const escapedValues = values.map(value => {
+                        if (value === null || value === undefined) {
+                            return '';
+                        }
+                        const stringValue = String(value);
+                        return `"${stringValue.replace(/"/g, '""')}"`;
+                    });
+                    csvRows.push(escapedValues.join(','));
+                });
+
+                return csvRows.join('\n');
+            }
+
+            // Function to trigger the CSV download
+            function downloadCsv() {
+                if (allMembersData.length === 0) {
+                    alert('No member data to download.');
+                    return;
+                }
+                const csvString = convertToCsv(allMembersData);
+                const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'members_data.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                } else {
+                    alert('Your browser does not support automatic downloads. Please copy the text and save as .csv manually:\n\n' + csvString);
+                }
+            }
+
+            // Event listener for the Download CSV button
+            downloadCsvBtn.addEventListener('click', downloadCsv);
+
+            // Initial fetch of members when the page loads
+            fetchMembers();
+        });
+    </script>
+</body>
+</html>

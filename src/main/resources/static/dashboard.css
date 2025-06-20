@@ -1,0 +1,146 @@
+/* dashboard.css - Fully Updated Professional College Portal Styling */
+
+/* Google Fonts Import (Add this to your HTML <head> section or at the very top of your CSS file) */
+/*
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+*/
+
+/* Global Styles & Base Layout for Sticky Footer */
+html {
+  height: 100%; /* Ensures HTML takes full viewport height */
+}
+
+body {
+  display: flex; /* Make body a flex container */
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Ensure body always takes at least the full viewport height */
+  margin: 0; /* Remove default body margins */
+  padding: 0; /* Remove any previous body padding that might interfere with fixed header */
+  background-color: #f8f9fa; /* A very light, clean off-white background for the overall page */
+  color: #343a40; /* Dark charcoal for primary text, ensuring good readability */
+  line-height: 1.6; /* Improved line spacing for better readability */
+  font-family: 'Open Sans', sans-serif; /* Professional and highly readable font for body text */
+}
+
+/* Header Styling */
+header {
+    background-color: #212121; /* Deep black for the header */
+    color: white; /* White text for header content */
+    padding: 20px 0; /* Vertical padding, no horizontal */
+    text-align: center; /* Centers inline content (like logo text) */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Subtle shadow for depth */
+    position: fixed; /* Fix header at the top of the viewport */
+    width: 100%; /* Make header span full width */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    z-index: 1000; /* Ensure header stays on top of other content */
+    height: 60px; /* Explicit height for the header (adjust if content varies) */
+    box-sizing: border-box; /* Include padding in the height calculation */
+}
+
+header .logo { /* Styling for the college name/logo in the header */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    /* text-align: center; is inherited from header */
+    /* If you have a specific logo image, you might need different styling here */
+}
+
+/* Optional Navigation within Header (if you add nav in HTML) */
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+header nav ul li {
+    margin: 0 20px;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #FFCCCC; /* A very light red/pink on hover for navigation links */
+}
+
+/* Main Content Area - Crucial for Sticky Footer */
+main {
+  flex-grow: 1; /* This makes the main content area expand and push the footer to the bottom */
+  padding-top: 100px; /* Add padding to push content down from the fixed header (Header height + desired space) */
+  box-sizing: border-box; /* Include padding in the height calculation */
+  display: flex; /* Use flex on main to help center container */
+  flex-direction: column; /* Stack items in main vertically */
+  align-items: center; /* Center container horizontally within main */
+  justify-content: flex-start; /* Align container to the top of the main area (if tall) */
+}
+
+/* Container for the main content block */
+.container {
+  max-width: 960px; /* Standard content width for desktop views */
+  margin: 40px 0; /* Add top/bottom margin for container, horizontal centering handled by main's align-items */
+  padding: 40px; /* Internal padding for the content box */
+  background-color: #ffffff; /* Pure white background for the main content area */
+  border-radius: 10px; /* Slightly rounded corners for a modern, soft feel */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* A more pronounced, professional shadow for depth */
+  text-align: center; /* Centers the content (like headings and buttons) within the container */
+  width: 100%; /* Ensure container takes full width up to max-width */
+}
+
+/* Headings Styling */
+h1 {
+  font-family: 'Montserrat', sans-serif; /* A strong, modern font for headings */
+  font-size: 2.8em; /* Larger and more impactful heading */
+  color: #212121; /* Deep black for prominent headings */
+  margin-bottom: 40px; /* Space below the heading */
+  letter-spacing: -0.5px; /* Slight negative letter spacing for a tighter, polished look */
+  font-weight: 700; /* Bolder for prominence */
+}
+
+/* Button Styling */
+button {
+  font-family: 'Open Sans', sans-serif; /* Consistent font with body for readability */
+  font-size: 1.2em; /* Slightly larger text for button prominence */
+  padding: 15px 35px; /* Generous padding for a substantial feel and easy clicking */
+  margin: 15px; /* Spacing around buttons */
+  border: none; /* No border for a clean look */
+  border-radius: 8px; /* Consistent rounded corners */
+  cursor: pointer; /* Indicates clickability */
+  background-color: #CC0000; /* Professional red for primary actions */
+  color: white; /* White text for contrast */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions for hover effects */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for buttons to give them depth */
+  font-weight: 600; /* Semi-bold text for buttons */
+}
+
+button:hover {
+  background-color: #A00000; /* Darker red on hover for an interactive feel */
+  transform: translateY(-3px); /* A slight lift effect on hover */
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+button:active {
+  background-color: #700000; /* Even darker red when clicked */
+  transform: translateY(0); /* Resets the lift effect */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Reduced shadow to simulate being pressed */
+}
+
+/* Footer Styling */
+footer {
+    background-color: #212121; /* Deep black for the footer */
+    color: #FFFFFF; /* White text for footer content */
+    padding: 25px 0; /* Vertical padding */
+    text-align: center; /* Centers footer text */
+    font-size: 0.9em; /* Slightly smaller font for footer text */
+    border-top: 1px solid #424242; /* Subtle top border in a darker grey */
+    width: 100%; /* Ensure footer spans full width */
+    /* margin-top is removed as flex-grow in main handles the spacing */
+}

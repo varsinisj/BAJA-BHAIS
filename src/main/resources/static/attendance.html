@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .member-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .member-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+        .member-item:last-child {
+            border-bottom: none;
+        }
+        .member-name {
+            flex-grow: 1;
+            padding-right: 10px;
+        }
+        .member-attendance input[type="checkbox"] {
+            transform: scale(1.2); /* Make checkbox slightly larger */
+            margin-right: 5px;
+        }
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+       
+		.back-button {
+				            display: inline-block;
+				            margin-top: 20px;
+				            padding: 10px 15px;
+				            background-color: #6c757d; /* Gray color */
+				            color: white;
+				            text-decoration: none;
+				            border-radius: 5px;
+				            transition: background-color 0.2s ease;
+				            text-align: center; /* Center the button if it's the only element in its line */
+				            width: fit-content; /* Adjust width to content */
+				            margin-left: auto; /* Push to right */
+				            margin-right: auto; /* Push to left */
+				        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mark Member Attendance</h1>
+
+        <div class="form-group">
+            <label for="attendanceDate">Select Date:</label>
+            <input type="date" id="attendanceDate" required>
+        </div>
+
+        <div class="form-group">
+            <label>Members:</label>
+            <div id="memberList" class="member-list">
+                <p>Loading members...</p>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="submitAttendance()">Submit Attendance</button>
+
+        <div id="message" class="message" style="display: none;"></div>
+
+		<div class="button-container">
+		            <a href="/admin.html" class="back-button">Back to Admin Dashboard</a>
+		        </div>
+    </div>
+
+    <script>
+        const memberListDiv = document.getElementById('memberList');
+        const attendanceDateInput = document.getElementById('attendanceDate');
+        const messageDiv = document.getElementById('message');
+
+        // Set today's date as default
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+        attendanceDateInput.value = `${year}-${month}-${day}`;
+
+        // Function to fetch members from the backend
+        async function fetchMembers() {
+            try {
+                const response = await fetch('/api/attendance/members');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const members = await response.json();
+                displayMembers(members);
+            } catch (error) {
+                console.error('Error fetching members:', error);
+                memberListDiv.innerHTML = '<p style="color: red;">Failed to load members. Please try again later.</p>';
+            }
+        }
+
+        // Function to display members in the list
+        function displayMembers(members) {
+            memberListDiv.innerHTML = ''; // Clear loading message
+            if (members.length === 0) {
+                memberListDiv.innerHTML = '<p>No members found.</p>';
+                return;
+            }
+
+            members.forEach(member => {
+                const memberItem = document.createElement('div');
+                memberItem.classList.add('member-item');
+
+                const nameSpan = document.createElement('span');
+                nameSpan.classList.add('member-name');
+                nameSpan.textContent = `${member.name} (ID: ${member.id})`;
+
+                const attendanceControl = document.createElement('div');
+                attendanceControl.classList.add('member-attendance');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `present-${member.id}`;
+                checkbox.dataset.userId = member.id; // Store user ID for submission
+                checkbox.checked = true; // Default to present
+
+                const label = document.createElement('label');
+                label.htmlFor = `present-${member.id}`;
+                label.textContent = 'Present';
+
+                attendanceControl.appendChild(checkbox);
+                attendanceControl.appendChild(label);
+
+                memberItem.appendChild(nameSpan);
+                memberItem.appendChild(attendanceControl);
+                memberListDiv.appendChild(memberItem);
+            });
+        }
+
+        // Function to submit attendance
+        async function submitAttendance() {
+            const selectedDate = attendanceDateInput.value;
+            if (!selectedDate) {
+                showMessage('Please select an attendance date.', 'error');
+                return;
+            }
+
+            const attendanceRecords = [];
+            const checkboxes = memberListDiv.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                attendanceRecords.push({
+                    userId: parseInt(checkbox.dataset.userId),
+                    present: checkbox.checked
+                });
+            });
+
+            const requestBody = {
+                date: selectedDate,
+                attendanceRecords: attendanceRecords
+            };
+
+            try {
+                const response = await fetch('/api/attendance/mark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.text(); // Assuming backend returns string or simple text
+
+                if (response.ok) {
+                    showMessage(result || 'Attendance marked successfully!', 'success');
+                } else {
+                    showMessage(result || 'Failed to mark attendance.', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting attendance:', error);
+                showMessage('An error occurred while submitting attendance.', 'error');
+            }
+        }
+
+        // Function to display messages
+        function showMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = `message ${type}`; // Add success or error class
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Load members when the page loads
+        document.addEventListener('DOMContentLoaded', fetchMembers);
+    </script>
+</body>
+</html>
