@@ -267,7 +267,12 @@
             const memberNameSpan = document.getElementById('memberName');
             const downloadCsvBtn = document.getElementById('downloadCsvBtn');
 
-            const API_BASE_URL = 'http://localhost:8080/api';
+            // --- IMPORTANT CHANGE HERE ---
+            // Update this URL to the public domain of your Spring Boot backend on Railway
+            // Example: 'https://_practical-grace-xxxx.up.railway.app/api'
+            // Use the actual domain you found in Railway's Networking settings.
+            const API_BASE_URL = 'https://practical-grace-production.up.railway.app/api'; 
+            // --- END IMPORTANT CHANGE ---
 
             let allMembersData = []; // To store fetched data for CSV export
 
